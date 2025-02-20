@@ -1,4 +1,3 @@
-
 import streamlit as st
 import matplotlib.pyplot as plt
 
@@ -49,3 +48,14 @@ ax.text(75, 25, "High Demand\nHigh Supply", ha='center', fontsize=12)
 
 ax.legend()
 st.pyplot(fig)
+
+# Requirements.txt content
+requirements = """\nstreamlit\nmatplotlib\n"""
+
+# Creating and displaying requirements.txt
+st.write("### Requirements.txt")
+st.code(requirements, language="text")
+
+with open("requirements.txt", "w") as req_file:
+    req_file.write(requirements)
+st.download_button(label="Download requirements.txt", data=requirements, file_name="requirements.txt")
