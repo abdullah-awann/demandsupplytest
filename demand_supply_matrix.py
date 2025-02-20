@@ -25,36 +25,55 @@ quadrant = get_quadrant(demand, supply)
 st.write(f"### Current Quadrant: {quadrant}")
 
 # Create a DataFrame for plotting
-data = pd.DataFrame({
+points = pd.DataFrame({
     'Demand': [demand],
     'Supply': [supply],
     'Quadrant': [quadrant]
 })
 
-# Altair chart for visualization
-chart = alt.Chart(data).mark_circle(size=200, color='red').encode(
-    x=alt.X('Supply:Q', scale=alt.Scale(domain=[0, 100]), title='Supply'),
-    y=alt.Y('Demand:Q', scale=alt.Scale(domain=[0, 100]), title='Demand'),
-    tooltip=['Demand', 'Supply', 'Quadrant']
-).properties(
-    width=600,
-    height=600,
-    title="Demand and Supply Matrix"
+# Background quadrants data
+quadrant_data = pd.DataFrame({
+    'x': [25, 75, 25, 75],
+    'y': [75, 75, 25, 25],
+    'label': [
+        'Low Demand\nLow Supply',
+        'Low Demand\nHigh Supply',
+        'High Demand\nLow Supply',
+        'High Demand\nHigh Supply'
+    ],
+    'color': ['#D3D3D3', '#FFD700', '#87CEFA', '#90EE90']
+})
+
+# Create background quadrants
+background = alt.Chart(quadrant_data).mark_rect(opacity=0.3).encode(
+    x=alt.X('x:Q', bin=alt.Bin(extent=[0, 100], step=50), title='Supply'),
+    y=alt.Y('y:Q', bin=alt.Bin(extent=[0, 100], step=50), title='Demand'),
+    color=alt.Color('color:N', scale=None, legend=None)
 )
 
-# Add quadrant background
-background = alt.Chart(pd.DataFrame({
-    'x': [50, 50, 0, 100],
-    'y': [0, 100, 50, 50],
-    'label': ['Low Demand\nLow Supply', 'Low Demand\nHigh Supply', 'High Demand\nLow Supply', 'High Demand\nHigh Supply']
-})).mark_text(size=14, opacity=0.5).encode(
+# Add quadrant labels
+labels = alt.Chart(quadrant_data).mark_text(size=16, fontWeight='bold').encode(
     x='x:Q',
     y='y:Q',
     text='label:N'
 )
 
-# Display chart with background
-st.altair_chart(background + chart)
+# Point for user input
+demand_supply_point = alt.Chart(points).mark_circle(size=300, color='red').encode(
+    x='Supply:Q',
+    y='Demand:Q',
+    tooltip=['Demand', 'Supply', 'Quadrant']
+)
+
+# Combine charts
+final_chart = (background + labels + demand_supply_point).properties(
+    width=700,
+    height=700,
+    title="Demand and Supply Matrix"
+)
+
+# Display chart
+st.altair_chart(final_chart)
 
 # Display quadrant details
 st.write("### Quadrant Definitions")
