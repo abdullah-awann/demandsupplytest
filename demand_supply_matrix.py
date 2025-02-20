@@ -1,5 +1,6 @@
 import streamlit as st
-import matplotlib.pyplot as plt
+import altair as alt
+import pandas as pd
 
 # Title
 st.title("Demand and Supply Matrix")
@@ -23,39 +24,41 @@ def get_quadrant(demand, supply):
 quadrant = get_quadrant(demand, supply)
 st.write(f"### Current Quadrant: {quadrant}")
 
-# Plotting the matrix
-fig, ax = plt.subplots(figsize=(10, 8))
+# Create a DataFrame for plotting
+data = pd.DataFrame({
+    'Demand': [demand],
+    'Supply': [supply],
+    'Quadrant': [quadrant]
+})
 
-# Draw grid lines
-ax.axhline(50, color='black', linewidth=1)
-ax.axvline(50, color='black', linewidth=1)
+# Altair chart for visualization
+chart = alt.Chart(data).mark_circle(size=200, color='red').encode(
+    x=alt.X('Supply:Q', scale=alt.Scale(domain=[0, 100]), title='Supply'),
+    y=alt.Y('Demand:Q', scale=alt.Scale(domain=[0, 100]), title='Demand'),
+    tooltip=['Demand', 'Supply', 'Quadrant']
+).properties(
+    width=600,
+    height=600,
+    title="Demand and Supply Matrix"
+)
 
-# Scatter plot for the current point
-ax.scatter(supply, demand, color='red', s=100, label='Current Point')
+# Add quadrant background
+background = alt.Chart(pd.DataFrame({
+    'x': [50, 50, 0, 100],
+    'y': [0, 100, 50, 50],
+    'label': ['Low Demand\nLow Supply', 'Low Demand\nHigh Supply', 'High Demand\nLow Supply', 'High Demand\nHigh Supply']
+})).mark_text(size=14, opacity=0.5).encode(
+    x='x:Q',
+    y='y:Q',
+    text='label:N'
+)
 
-# Labels and limits
-ax.set_xlim(0, 100)
-ax.set_ylim(0, 100)
-ax.set_xlabel("Supply")
-ax.set_ylabel("Demand")
-ax.set_title("Demand and Supply Matrix")
+# Display chart with background
+st.altair_chart(background + chart)
 
-# Quadrant labels
-ax.text(25, 75, "Low Demand\nLow Supply", ha='center', fontsize=12)
-ax.text(75, 75, "Low Demand\nHigh Supply", ha='center', fontsize=12)
-ax.text(25, 25, "High Demand\nLow Supply", ha='center', fontsize=12)
-ax.text(75, 25, "High Demand\nHigh Supply", ha='center', fontsize=12)
-
-ax.legend()
-st.pyplot(fig)
-
-# Requirements.txt content
-requirements = """\nstreamlit\nmatplotlib\n"""
-
-# Creating and displaying requirements.txt
-st.write("### Requirements.txt")
-st.code(requirements, language="text")
-
-with open("requirements.txt", "w") as req_file:
-    req_file.write(requirements)
-st.download_button(label="Download requirements.txt", data=requirements, file_name="requirements.txt")
+# Display quadrant details
+st.write("### Quadrant Definitions")
+st.write("1. **Low Demand and Low Supply**: Both demand and supply are below the midpoint.")
+st.write("2. **Low Demand and High Supply**: Demand is below the midpoint, but supply is above.")
+st.write("3. **High Demand and Low Supply**: Demand is above the midpoint, but supply is below.")
+st.write("4. **High Demand and High Supply**: Both demand and supply are above the midpoint.")
