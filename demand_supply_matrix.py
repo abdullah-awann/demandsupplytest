@@ -34,7 +34,7 @@ points = pd.DataFrame({
 # Background quadrants data
 quadrant_data = pd.DataFrame({
     'x': [25, 75, 25, 75],
-    'y': [75, 75, 25, 25],
+    'y': [25, 25, 75, 75],
     'label': [
         'Low Demand\nLow Supply',
         'Low Demand\nHigh Supply',
@@ -77,7 +77,7 @@ st.altair_chart(final_chart)
 
 # Display quadrant details
 st.write("### Quadrant Definitions")
-st.write("1. **Low Demand and Low Supply**: Both demand and supply are below the midpoint.")
-st.write("2. **Low Demand and High Supply**: Demand is below the midpoint, but supply is above.")
-st.write("3. **High Demand and Low Supply**: Demand is above the midpoint, but supply is below.")
-st.write("4. **High Demand and High Supply**: Both demand and supply are above the midpoint.")
+st.write("1. **Low Demand and Low Supply (Bottom Left)**: Both demand and supply are below the midpoint.")
+st.write("2. **Low Demand and High Supply (Bottom Right)**: Demand is below the midpoint, but supply is above.")
+st.write("3. **High Demand and Low Supply (Top Left)**: Demand is above the midpoint, but supply is below.")
+st.write("4. **High Demand and High Supply (Top Right)**: Both demand and supply are above the midpoint.")
