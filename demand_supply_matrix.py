@@ -4,11 +4,24 @@ import pandas as pd
 
 # Title
 st.title("Demand and Supply Matrix")
-st.write("This app visualizes the demand and supply matrix with four quadrants.")
+st.write("This app visualizes the demand and supply matrix with four quadrants based on input metrics.")
 
-# User inputs for demand and supply
-demand = st.slider("Select Demand", 0, 100, 50)
-supply = st.slider("Select Supply", 0, 100, 50)
+# User inputs for demand and supply metrics
+total_games = st.number_input("Total games in the family", min_value=0, value=10)
+total_downloads = st.number_input("Total family downloads", min_value=0, value=100000)
+per_day_installs = st.number_input("Total per day installs of the family", min_value=0, value=5000)
+last_30_days_downloads = st.number_input("Last 30 days downloads of the family", min_value=0, value=150000)
+games_above_50k_installs = st.number_input("Number of games in the family getting more than 50K per day installs", min_value=0, value=2)
+
+# Calculate demand and supply based on inputs
+def calculate_demand(total_downloads, last_30_days_downloads, games_above_50k_installs):
+    return (total_downloads * 0.4 + last_30_days_downloads * 0.4 + games_above_50k_installs * 0.2) / 1000000 * 100
+
+def calculate_supply(total_games, per_day_installs):
+    return (total_games * 0.5 + per_day_installs * 0.5) / 10000 * 100
+
+demand = min(100, calculate_demand(total_downloads, last_30_days_downloads, games_above_50k_installs))
+supply = min(100, calculate_supply(total_games, per_day_installs))
 
 # Function to determine quadrant
 def get_quadrant(demand, supply):
